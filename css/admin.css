@@ -1,0 +1,63 @@
+/*	Viewing
+---------------------------------------------*/
+
+/* Left Side */
+section.left
+{
+	float: left;
+	width: 70%;
+}
+
+section.left img.profile-image
+{
+	float: left;
+	max-width: 55px;
+	margin: 8px 10px 0 0;
+	border: 1px solid #DDD;
+	display: inline-block;
+}
+
+section.left h1.name
+{
+	margin: 0;
+	display: inline-block;
+}
+
+/* Right Side */
+aside.right
+{
+	float: right;
+	width: 29%;
+	min-height: 500px;
+	margin: -25px -25px -25px 0 !important;
+	padding: 15px 0 15px 15px;
+	background: #f0f6f9;
+	border-left: 1px solid #dfdfdf;
+
+	-webkit-border-radius: 0 0 5px 0;
+	border-radius: 0 0 5px 0;
+}
+
+aside.right div.mini-heading
+{
+	margin-left: -15px;
+	margin-bottom: 1em;
+	padding: 3px 18px;
+	background: #DEE4E8;
+}
+
+aside.right div.mini-heading span
+{
+	font-size: 12px;
+	color: #555;
+	font-weight: normal;
+}
+
+aside.right a.map
+{
+	height: 90px;
+	width: 189px;
+	display: inline-block;
+}
+
+/* Overwrite Core CSS */
