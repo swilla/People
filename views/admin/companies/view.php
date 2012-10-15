@@ -30,16 +30,19 @@
 				<ul class="tab-menu">
 				
 					<li>
-						<a href="#comments-tab" title="<?php echo lang('people:tab:comments'); ?>">
-							<span><?php echo lang('people:tab:comments'); ?> <span class="count">(<?php //echo count_comments($company->id, 'companies-company', true); ?>)</span></span>
+						<a href="#comments-tab">
+							<span><?php echo lang('comments:title'); ?></span>
 						</a>
 					</li>
 
+					<!-- Tasks Tab -->
+					<?php if( module_installed('tasks') ): ?>
 					<li>
-						<a href="#tasks-tab" title="<?php echo lang('people:tab:tasks'); ?>">
-							<span><?php echo lang('people:tab:tasks'); ?> <span class="count">(<?php //echo count_tasks($company->id, 'companies-company', true); ?>)</span></span>
+						<a href="#tasks-tab">
+							<span><?php echo lang('tasks:title:tasks'); ?></span>
 						</a>
 					</li>
+					<?php endif; ?>
 				
 				</ul>
 
@@ -49,7 +52,24 @@
 				
 					<fieldset>
 
-						<?php //echo display_comments($company->id, 'companies-company'); ?>
+						<?php
+
+							$this->load->library(
+								'comments/comments',
+								array(
+									'module' => 'people',
+									'singular' => 'company',
+									'plural' => 'companies',
+									'entry_id' => $company->id,
+									'entry_title' => $company->name
+									)
+								);
+
+							echo $this->comments->display();
+
+							echo $this->comments->form();
+
+						?>
 
 					</fieldset>
 
@@ -57,15 +77,28 @@
 
 
 				<!-- Tasks -->
+				<?php if( module_installed('tasks') ): ?>
 				<div class="form_inputs" id="tasks-tab">
 				
 					<fieldset>
 
-						<?php //echo display_tasks($company->id, 'companies-company'); ?>
+						<?php
+
+							$this->load->library('tasks/tasks', array('module' => 'people', 'singular' => 'company', 'plural' => 'companies', 'entry_id' => $company->id));
+
+							echo $this->tasks->display();
+
+							echo '<br>';
+
+							echo '<h4>'.lang('tasks:title:create_task').'</h4>';
+
+							echo $this->tasks->form();
+						?>
 
 					</fieldset>
 
 				</div>
+				<?php endif; ?>
 
 
 			</div>
@@ -83,13 +116,21 @@
 			
 
 			<!-- Tasks - Mini-Heading -->
-			<div class="mini-heading"><span><?php echo lang('people:title:tasks'); ?></span></div>
+			<div class="mini-heading"><span><?php echo lang('tasks:title:tasks'); ?></span></div>
 
 			<!-- Small Tasks List -->
 			<?php if( module_installed('tasks') ): ?>
-			<?php echo display_tasks($company->id, 'companies-company', false); ?>
+
+				<?php echo $this->tasks->display(); ?>
+
+				<br>
+
 			<?php else: ?>
-			<p><?php echo lang('people:error_install_tasks'); ?></p>
+
+				<?php echo lang('people:notification:install_tasks'); ?>
+
+				<br>
+
 			<?php endif; ?>
 			<!-- /Small Tasks List -->
 

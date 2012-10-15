@@ -35,7 +35,7 @@ class Contacts extends Admin_Controller
 			array(
 				'title' 	=> lang('people:tab:contact_information'),
 				'id'		=> 'contact-information-tab',
-				'fields'	=> array('str_id', 'profile_image', 'first_name', 'last_name', 'title', 'company', 'phone', 'mobile', 'fax', 'email', 'website'),
+				'fields'	=> array('str_id', 'name', 'profile_image', 'first_name', 'last_name', 'title', 'company', 'phone', 'mobile', 'fax', 'email', 'website'),
 				),
 			array(
 				'title' 	=> lang('people:tab:address'),
@@ -55,7 +55,7 @@ class Contacts extends Admin_Controller
 			array(
 				'title' 	=> lang('people:tab:other'),
 				'id'		=> 'other-tab',
-				'fields'	=> array('source', 'industry', 'user', 'background', 'keywords'),
+				'fields'	=> array('source', 'industry', 'other_phone', 'other_email', 'dob', 'user', 'background', 'keywords'),
 				),
 			array(
 				'title' 	=> lang('people:tab:files'),
@@ -122,9 +122,6 @@ class Contacts extends Admin_Controller
 		// Set the title
 		$this->template->title(lang('people:title:create_contact'));
 
-		// Make the name
-		if ( ! empty($_POST) ) $_POST['name'] = $_POST['first_name'].' '.$_POST['last_name'];
-
 		/* Start normal Streams_Core stuff
 		-----------------------------------*/
 
@@ -136,7 +133,7 @@ class Contacts extends Admin_Controller
 
 
 		// Build it
-		$this->streams->cp->entry_form('contacts', 'people', $mode = 'new', null, true, $extra, array(), $this->tabs, $hidden = array('str_id'), $defaults = array('str_id' => rand_string(20)));
+		$this->streams->cp->entry_form('contacts', 'people', $mode = 'new', null, true, $extra, array(), $this->tabs, $hidden = array('str_id', 'name'), $defaults = array('str_id' => rand_string(20)));
 	}
 	
 	// --------------------------------------------------------------------------
@@ -167,7 +164,7 @@ class Contacts extends Admin_Controller
 
 
 		// Build it
-		$this->streams->cp->entry_form('contacts', 'people', $mode = 'edit', $id, true, $extra, array('str_id'), $this->tabs);
+		$this->streams->cp->entry_form('contacts', 'people', $mode = 'edit', $id, true, $extra, array('str_id'), $this->tabs, $hidden = array('name'));
 	}
 
 	// --------------------------------------------------------------------------
@@ -203,6 +200,19 @@ class Contacts extends Admin_Controller
 			$company = array();
 		}
 
+
+		/**
+		 * Load related modules where applicable
+		 **********************************************/
+
+		// Comments
+		$this->load->library('comments/comments', array('module' => 'people', 'singular' => 'contact', 'plural' => 'contacts', 'entry_id' => $contact->id, 'entry_title' => $contact->first_name.' '.$contact->last_name));
+
+		// Tasks
+		if ( module_installed('tasks') ) $this->load->library('tasks/tasks', array('module' => 'people', 'singular' => 'contact', 'plural' => 'contacts', 'entry_id' => $contact->id, 'entry_title' => $contact->first_name.' '.$contact->last_name));
+
+
+		// Build it up
 		$this->template->build('admin/contacts/view', array('contact' => $contact, 'company' => $company));
 	}
 
@@ -222,6 +232,9 @@ class Contacts extends Admin_Controller
 
 		// Delete search index
 		$this->db->delete('search_index', array('module' => 'people', 'entry_key' => 'contact', 'entry_id' => $id));
+
+		// Delete comments
+		$this->db->delete('comments', array('module' => 'people', 'entry_key' => 'contact', 'entry_id' => $id));
 
 		redirect(site_url('admin/people/contacts'));
 	}

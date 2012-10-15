@@ -55,7 +55,7 @@ class companies extends Admin_Controller
 			array(
 				'title' 	=> lang('people:tab:other'),
 				'id'		=> 'other-tab',
-				'fields'	=> array('source', 'industry', 'industry', 'user', 'background', 'keywords'),
+				'fields'	=> array('source', 'number_of_employees', 'annual_revenue', 'industry', 'user', 'background', 'keywords'),
 				),
 			array(
 				'title' 	=> lang('people:tab:files'),
@@ -194,6 +194,19 @@ class companies extends Admin_Controller
 				)
 			);
 
+
+		/**
+		 * Load related modules where applicable
+		 **********************************************/
+
+		// Comments
+		$this->load->library('comments/comments', array('module' => 'people', 'singular' => 'company', 'plural' => 'companies', 'entry_id' => $company->id, 'entry_title' => $company->name));
+
+		// Tasks
+		if ( module_installed('tasks') ) $this->load->library('tasks/tasks', array('module' => 'people', 'singular' => 'company', 'plural' => 'companies', 'entry_id' => $company->id, 'entry_title' => $company->name));
+
+
+		// Build it up
 		$this->template->build('admin/companies/view', array('company' => $company, 'contacts' => $contacts));
 	}
 
@@ -213,6 +226,9 @@ class companies extends Admin_Controller
 
 		// Delete search index
 		$this->db->delete('search_index', array('module' => 'people', 'entry_key' => 'company', 'entry_id' => $id));
+
+		// Delete comments
+		$this->db->delete('comments', array('module' => 'people', 'entry_key' => 'company', 'entry_id' => $id));
 
 		redirect(site_url('admin/people/companies'));
 	}

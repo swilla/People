@@ -36,7 +36,7 @@ class Events_People {
 			// Load the search module model
 			$this->CI->load->model('search_index_m');
 
-			switch ( $data['stream']->stream_slug == 'contacts' )
+			switch ( $data['stream']->stream_slug )
 			{
 
 				// Contacts
@@ -49,8 +49,8 @@ class Events_People {
 						'contacts',
 						$data['entry_id'],
 						'',	// Front URI
-						$data['insert_data']['first_name'].' '.$data['insert_data']['last_name'],
-						$data['insert_data']['background'],	// TODO: Phone, email, etc go here
+						$data['insert_data']['name'],
+						$data['insert_data']['background'].' '.$data['insert_data']['phone'].' '.$data['insert_data']['email'].' '.$data['insert_data']['other_phone'],
 						array(
 							'cp_edit_uri' => 'admin/people/contacts/view/'.$data['entry_id']
 							)
@@ -70,7 +70,7 @@ class Events_People {
 						$data['entry_id'],
 						'',	// Front URI
 						$data['insert_data']['name'],
-						$data['insert_data']['background'],	// TODO: Phone, email, etc go here
+						$data['insert_data']['background'].' '.$data['insert_data']['phone'].' '.$data['insert_data']['email'],
 						array(
 							'cp_edit_uri' => 'admin/people/companies/view/'.$data['entry_id']
 							)
@@ -99,7 +99,7 @@ class Events_People {
 			// Load the search module model
 			$this->CI->load->model('search_index_m');
 
-			switch ( $data['stream']->stream_slug == 'contacts' )
+			switch ( $data['stream']->stream_slug )
 			{
 
 				// Contacts
@@ -113,11 +113,20 @@ class Events_People {
 						$data['entry_id'],
 						'',	// Front URI
 						$data['update_data']['first_name'].' '.$data['update_data']['last_name'],
-						$data['update_data']['background'],	// TODO: Phone, email, etc go here
+						$data['update_data']['background'].' '.$data['update_data']['phone'].' '.$data['update_data']['email'].' '.$data['update_data']['other_phone'],
 						array(
 							'cp_edit_uri' => 'admin/people/contacts/view/'.$data['entry_id']
 							)
 						);
+
+					// Update comments titles
+					$this->CI->db->update('comments', array('entry_title' => $data['update_data']['first_name'].' '.$data['update_data']['last_name']), array('module' => 'people', 'entry_key' => 'contact', 'entry_id' => $data['entry_id']));
+
+					// Update tasks titles
+					if ( module_installed('tasks') )
+					{
+						$this->CI->db->update('tasks_tasks', array('entry_title' => $data['update_data']['first_name'].' '.$data['update_data']['last_name']), array('module' => 'people', 'entry_key' => 'contact', 'entry_id' => $data['entry_id']));
+					}
 
 					break;
 
@@ -133,11 +142,20 @@ class Events_People {
 						$data['entry_id'],
 						'',	// Front URI
 						$data['update_data']['name'],
-						$data['update_data']['background'],	// TODO: Phone, email, etc go here
+						$data['update_data']['background'].' '.$data['update_data']['phone'].' '.$data['update_data']['email'],
 						array(
 							'cp_edit_uri' => 'admin/people/companies/view/'.$data['entry_id']
 							)
 						);
+
+					// Update comments titles
+					$this->CI->db->update('comments', array('entry_title' => $data['update_data']['name']), array('module' => 'people', 'entry_key' => 'company', 'entry_id' => $data['entry_id']));
+
+					// Update tasks titles
+					if ( module_installed('tasks') )
+					{
+						$this->CI->db->update('tasks_tasks', array('entry_title' => $data['update_data']['name']), array('module' => 'people', 'entry_key' => 'company', 'entry_id' => $data['entry_id']));
+					}
 
 					break;
 			}

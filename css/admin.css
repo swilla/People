@@ -26,14 +26,15 @@ section.left h1.name
 /* Right Side */
 aside.right
 {
-	float: right;
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
 	width: 29%;
-	min-height: 500px;
-	margin: -25px -25px -25px 0 !important;
 	padding: 15px 0 15px 15px;
-	background: #f0f6f9;
-	border-left: 1px solid #dfdfdf;
-
+	background: #F0F6F9;
+	border-left: 1px solid #DFDFDF;
+	
 	-webkit-border-radius: 0 0 5px 0;
 	border-radius: 0 0 5px 0;
 }

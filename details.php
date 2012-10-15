@@ -17,7 +17,7 @@ class Module_People extends Module {
 			'default_install' => false,
 			'frontend' => true,
 			'backend' => true,
-			'menu' => 'Applications',
+			'menu' => 'data',
 			'sections' => array(
 				
 				'contacts' => array(
@@ -158,13 +158,14 @@ class Module_People extends Module {
 
 		// Add Contacts Entries
 		$this->streams->streams->add_stream('Contacts', 'contacts', 'people', 'people_', NULL);
-		$this->streams->streams->update_stream('contacts', 'people', array('stream_prefix' => 'people_', 'view_options' => array('first_name', 'last_name')));
+		$this->streams->streams->update_stream('contacts', 'people', array('stream_prefix' => 'people_', 'view_options' => array('first_name', 'last_name', 'title', 'company', 'phone', 'mobile', 'email')));
 
 		// Add Companies Logs
 		$this->streams->streams->add_stream('Companies', 'companies', 'people', 'people_', NULL);
-		$this->streams->streams->update_stream('companies', 'people', array('stream_prefix' => 'people_', 'view_options' => array('name')));
+		$this->streams->streams->update_stream('companies', 'people', array('stream_prefix' => 'people_', 'view_options' => array('name', 'phone', 'email', 'website')));
 
 		// Get some info for later
+		$streams['contacts'] = $this->streams->streams->get_stream('contacts', 'people');
 		$streams['companies'] = $this->streams->streams->get_stream('companies', 'people');
 
 
@@ -182,6 +183,13 @@ class Module_People extends Module {
 				'namespace'		=> 'people',
 				'type'			=> 'image',
 				'extra'			=> array('folder' => $folders['profile_images']['data']['id'], 'resize_width' => '150'),
+				),
+			array(
+				'name'			=> 'lang:people:contact',
+				'slug'			=> 'contact',
+				'namespace'		=> 'people',
+				'type'			=> 'relationship',
+				'extra'		 	=> array('choose_stream' => $streams['contacts']->id, 'link_uri' => 'admin/people/contacts/-entry_id-'),
 				),
 			
 
@@ -216,7 +224,7 @@ class Module_People extends Module {
 				'slug'			=> 'company',
 				'namespace'		=> 'people',
 				'type'			=> 'relationship',
-				'extra'		 	=> array('choose_stream' => $streams['companies']->id, 'link_uri' => 'admin/people/companies/-entry_id-'),
+				'extra'		 	=> array('choose_stream' => $streams['companies']->id, 'link_uri' => 'admin/people/companies/view/-entry_id-'),
 				),
 			array(
 				'name'			=> 'lang:people:phone',
@@ -374,6 +382,25 @@ class Module_People extends Module {
 				'type'			=> 'user',
 				),
 			array(
+				'name'			=> 'lang:people:other_phone',
+				'slug'			=> 'other_phone',
+				'namespace'		=> 'people',
+				'type'			=> 'text',
+				),
+			array(
+				'name'			=> 'lang:people:other_email',
+				'slug'			=> 'other_email',
+				'namespace'		=> 'people',
+				'type'			=> 'email',
+				),
+			array(
+				'name'			=> 'lang:people:dob',
+				'slug'			=> 'dob',
+				'namespace'		=> 'people',
+				'type'			=> 'datetime',
+				'extra'		 	=> array('use_time' => 'no', 'input_type' => 'dropdown'),
+				),
+			array(
 				'name'			=> 'lang:people:background',
 				'slug'			=> 'background',
 				'namespace'		=> 'people',
@@ -384,6 +411,18 @@ class Module_People extends Module {
 				'slug'			=> 'keywords',
 				'namespace'		=> 'people',
 				'type'			=> 'keywords',
+				),
+			array(
+				'name'			=> 'lang:people:number_of_employees',
+				'slug'			=> 'number_of_employees',
+				'namespace'		=> 'people',
+				'type'			=> 'integer',
+				),
+			array(
+				'name'			=> 'lang:people:annual_revenue',
+				'slug'			=> 'annual_revenue',
+				'namespace'		=> 'people',
+				'type'			=> 'integer',
 				),
 			);
 
@@ -454,6 +493,9 @@ class Module_People extends Module {
 		$this->streams->fields->assign_field('people', 'contacts', 'linkedin',						array('instructions' => lang('people:instructions:linkedin')));
 		$this->streams->fields->assign_field('people', 'contacts', 'source', 						array('instructions' => lang('people:instructions:source')));
 		$this->streams->fields->assign_field('people', 'contacts', 'user',	 						array('instructions' => lang('people:instructions:user')));
+		$this->streams->fields->assign_field('people', 'contacts', 'other_phone', 					array('instructions' => lang('people:instructions:other_phone')));
+		$this->streams->fields->assign_field('people', 'contacts', 'other_email',					array('instructions' => lang('people:instructions:other_email')));
+		$this->streams->fields->assign_field('people', 'contacts', 'dob',							array('instructions' => lang('people:instructions:dob')));
 		$this->streams->fields->assign_field('people', 'contacts', 'background',					array('instructions' => lang('people:instructions:background')));
 		$this->streams->fields->assign_field('people', 'contacts', 'keywords', 						array('instructions' => lang('people:instructions:keywords')));
 		$this->streams->fields->assign_field('people', 'contacts', 'contact_files',					array('instructions' => lang('people:instructions:contact_files')));
@@ -481,8 +523,12 @@ class Module_People extends Module {
 		$this->streams->fields->assign_field('people', 'companies', 'linkedin',						array('instructions' => lang('people:instructions:linkedin')));
 		$this->streams->fields->assign_field('people', 'companies', 'source', 						array('instructions' => lang('people:instructions:source')));
 		$this->streams->fields->assign_field('people', 'companies', 'industry', 					array('instructions' => lang('people:instructions:industry')));
+		$this->streams->fields->assign_field('people', 'companies', 'other_phone', 					array('instructions' => lang('people:instructions:other_phone')));
+		$this->streams->fields->assign_field('people', 'companies', 'other_email', 					array('instructions' => lang('people:instructions:other_email')));
 		$this->streams->fields->assign_field('people', 'companies', 'background',					array('instructions' => lang('people:instructions:background')));
 		$this->streams->fields->assign_field('people', 'companies', 'keywords', 					array('instructions' => lang('people:instructions:keywords')));
+		$this->streams->fields->assign_field('people', 'companies', 'number_of_employees',			array('instructions' => lang('people:instructions:number_of_employees')));
+		$this->streams->fields->assign_field('people', 'companies', 'annual_revenue',				array('instructions' => lang('people:instructions:annual_revenue')));
 		$this->streams->fields->assign_field('people', 'companies', 'company_files',				array('instructions' => lang('people:instructions:company_files')));
 		$this->streams->fields->assign_field('people', 'companies', 'profile_image',				array('instructions' => lang('people:instructions:profile_image')));
 
@@ -527,6 +573,13 @@ class Module_People extends Module {
 		------------------------------------------------------------------*/
 
 		$this->db->delete('search_index', array('module' => 'people'));
+
+
+
+		/*	Remove Comment Data
+		------------------------------------------------------------------*/
+
+		$this->db->delete('comments', array('module' => 'people'));
 
 
 		// Weeeeeeee
